@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using DefaultNamespace;
 using UnityEngine;
 
 namespace Player
@@ -22,22 +23,30 @@ namespace Player
         private float _verticalInput;
 
         private Vector3 _moveDirection;
-        private Rigidbody _rigidbody;
+        private Rigidbody _rigidBody;
 
         private bool _readyToJump;
         private bool _grounded;
 
+        private bool _gameStopped = false;
+
         private void Start()
         {
-            _rigidbody = GetComponent<Rigidbody>();
-            _rigidbody.freezeRotation = true;
+            _rigidBody = GetComponent<Rigidbody>();
+            _rigidBody.freezeRotation = true;
 
             _readyToJump = true;
             _playerHeight = transform.localScale.y;
+            GlobalEventManager.OnGameFinish.AddListener(() => { _gameStopped = true; });
         }
 
         private void Update()
         {
+            if (_gameStopped)
+            {
+                return;
+            }
+
             float maxDistance = _playerHeight + 0.01f;
             _grounded = Physics.Raycast(transform.position, Vector3.down, maxDistance, isGround);
 
@@ -47,35 +56,31 @@ namespace Player
             Jump();
             SpeedControl();
 
-            _rigidbody.drag = _grounded ? groundDrag : 0;
+            _rigidBody.drag = _grounded ? groundDrag : 0;
         }
 
         private void FixedUpdate()
         {
+            if (_gameStopped)
+            {
+                return;
+            }
+
             _moveDirection = (orientation.forward * _verticalInput) + (orientation.right * _horizontalInput);
 
             var forceVector = _moveDirection.normalized * (10f * moveSpeed);
             forceVector *= _grounded ? 1 : airMultiplier;
-            _rigidbody.AddForce(forceVector, ForceMode.Force);
-
-            /*if (_grounded)
-            {
-                _rigidbody.AddForce(_moveDirection.normalized * (10f * moveSpeed), ForceMode.Force);
-            }
-            else if (!_grounded)
-            {
-                _rigidbody.AddForce(_moveDirection.normalized * (10f * moveSpeed * airMultiplier), ForceMode.Force);
-            }*/
+            _rigidBody.AddForce(forceVector, ForceMode.Force);
         }
 
         private void SpeedControl()
         {
-            var oldVelocity = _rigidbody.velocity;
+            var oldVelocity = _rigidBody.velocity;
             var flatVelocity = new Vector3(oldVelocity.x, 0f, oldVelocity.z);
             if (flatVelocity.magnitude > moveSpeed)
             {
                 var limitedVelocity = flatVelocity.normalized * moveSpeed;
-                _rigidbody.velocity = new Vector3(limitedVelocity.x, _rigidbody.velocity.y, limitedVelocity.z);
+                _rigidBody.velocity = new Vector3(limitedVelocity.x, _rigidBody.velocity.y, limitedVelocity.z);
             }
         }
 
@@ -87,9 +92,9 @@ namespace Player
             }
 
             _readyToJump = false;
-            var oldVelocity = _rigidbody.velocity;
-            _rigidbody.velocity = new Vector3(oldVelocity.x, 0f, oldVelocity.z);
-            _rigidbody.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+            var oldVelocity = _rigidBody.velocity;
+            _rigidBody.velocity = new Vector3(oldVelocity.x, 0f, oldVelocity.z);
+            _rigidBody.AddForce(transform.up * jumpForce, ForceMode.Impulse);
             StartCoroutine(ResetJump());
         }
 
