@@ -25,9 +25,13 @@ namespace Player
             {
                 Destroy(collider.gameObject);
                 ++_collectedTargets;
-                _points += 200;
-                UIEventManager.ChangeScore(_points);
+                AddPoints(200);
                 CheckGameState();
+            }
+
+            if (collider.gameObject.CompareTag("IWalls"))
+            {
+                AddPoints(-250f);
             }
         }
 
@@ -37,6 +41,12 @@ namespace Player
             {
                 GlobalEventManager.FinishGame();
             }
+        }
+
+        public void AddPoints(float points)
+        {
+            _points += points;
+            UIEventManager.ChangeScore(_points);
         }
     }
 }
