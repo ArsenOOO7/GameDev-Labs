@@ -33,7 +33,7 @@ namespace DefaultNamespace
 
             _emptyTile = _tiles[3, 3];
             ColorUtils.FillMaterials(_tiles);
-            PositionUtils.RandomShuffle(_tiles, _emptyTile, 20);
+            PositionUtils.RandomShuffle(_tiles, _emptyTile, 5);
         }
 
         private bool IsPazzleSolved()

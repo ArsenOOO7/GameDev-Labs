@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Mono.Collections.Generic;
-using Unity.Mathematics;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 

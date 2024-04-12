@@ -1,5 +1,4 @@
-﻿using System;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 
 namespace DefaultNamespace.UI
@@ -18,6 +17,7 @@ namespace DefaultNamespace.UI
             UIEventManager.ON_MOVEMENENT.AddListener((moves) => { movesText.SetText(MOVES + moves); });
             GlobalEventManager.OnGameFinish.AddListener(() =>
             {
+                movesText.gameObject.SetActive(false);
                 game.SetActive(false);
                 panel.SetActive(true);
             });
