@@ -1,4 +1,5 @@
 ﻿using System;
+using DefaultNamespace.UI;
 using DefaultNamespace.Util;
 using Entity;
 using UnityEngine;
@@ -14,7 +15,8 @@ namespace DefaultNamespace
 
         [SerializeField] private LayerMask layerMask;
 
-        private bool finished = false;
+        private bool _finished = false;
+        private int _moves = 0;
 
         private void Start()
         {
@@ -31,7 +33,7 @@ namespace DefaultNamespace
 
             _emptyTile = _tiles[3, 3];
             ColorUtils.FillMaterials(_tiles);
-            PositionUtils.RandomShuffle(_tiles, _emptyTile, 30);
+            PositionUtils.RandomShuffle(_tiles, _emptyTile, 20);
         }
 
         private bool IsPazzleSolved()
@@ -54,21 +56,21 @@ namespace DefaultNamespace
 
         private void Update()
         {
-            if (finished)
+            if (_finished)
             {
                 return;
             }
 
             if (IsPazzleSolved())
             {
-                Console.WriteLine("Pazzle is solved");
-                finished = true;
+                _finished = true;
+                GlobalEventManager.Finish();
             }
         }
 
         public void OnMouseDownClick(GameObject pazzle)
         {
-            if (finished)
+            if (_finished)
             {
                 return;
             }
@@ -77,6 +79,8 @@ namespace DefaultNamespace
             if (tile != null && tile.TryMove(_emptyTile.transform.position))
             {
                 PositionUtils.SwapTiles(tile, _emptyTile);
+                ++_moves;
+                UIEventManager.OnNewMove(_moves);
             }
         }
     }
