@@ -10,7 +10,6 @@ namespace DefaultNamespace
         private void Start()
         {
             _generalController = gameObject.GetComponentInParent<General>();
-            Console.WriteLine(11);
         }
 
         public void OnMouseDownClick()
