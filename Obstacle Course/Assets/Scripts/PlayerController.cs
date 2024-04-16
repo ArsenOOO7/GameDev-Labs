@@ -8,6 +8,7 @@ namespace DefaultNamespace
         private Rigidbody _rigidBody;
 
         private bool _finished = false;
+        private bool _trulyFinished = false;
         private float _playerWaitingTime;
 
         private void OnTriggerEnter(Collider collider)
@@ -22,6 +23,7 @@ namespace DefaultNamespace
                 if (_finished)
                 {
                     GlobalEventManager.PlayerFinished();
+                    _trulyFinished = true;
                 }
             }
         }
@@ -34,6 +36,11 @@ namespace DefaultNamespace
 
         private void Update()
         {
+            if (_trulyFinished)
+            {
+                return;
+            }
+
             if (_playerWaitingTime > 5)
             {
                 GlobalEventManager.PlayerDeath();
