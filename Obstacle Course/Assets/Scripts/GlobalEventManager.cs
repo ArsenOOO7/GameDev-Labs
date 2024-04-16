@@ -5,13 +5,13 @@ namespace DefaultNamespace
 {
     public class GlobalEventManager : MonoBehaviour
     {
-        public static readonly UnityEvent OnPlayerFinished = new();
+        public static readonly UnityEvent<float> OnPlayerFinished = new();
         public static readonly UnityEvent OnPlayerDeath = new();
         public static readonly UnityEvent<float> OnUpdateWaitingTime = new();
 
-        public static void PlayerFinished()
+        public static void PlayerFinished(float totalGameTime)
         {
-            OnPlayerFinished.Invoke();
+            OnPlayerFinished.Invoke(totalGameTime);
         }
 
         public static void PlayerDeath()

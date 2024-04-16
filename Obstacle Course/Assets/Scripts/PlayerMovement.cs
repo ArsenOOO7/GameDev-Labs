@@ -34,7 +34,7 @@ namespace DefaultNamespace
             _readyToJump = true;
             _playerHeight = transform.localScale.y;
             
-            GlobalEventManager.OnPlayerFinished.AddListener(() => _gameStopped = true);
+            GlobalEventManager.OnPlayerFinished.AddListener((_) => _gameStopped = true);
             GlobalEventManager.OnPlayerDeath.AddListener(() => _gameStopped = true);
         }
 

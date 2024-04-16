@@ -10,6 +10,7 @@ namespace DefaultNamespace
         private bool _finished = false;
         private bool _trulyFinished = false;
         private float _playerWaitingTime;
+        private float _totalGameTime = 0f;
 
         private void OnTriggerEnter(Collider collider)
         {
@@ -22,7 +23,7 @@ namespace DefaultNamespace
             {
                 if (_finished)
                 {
-                    GlobalEventManager.PlayerFinished();
+                    GlobalEventManager.PlayerFinished(_totalGameTime);
                     _trulyFinished = true;
                 }
             }
@@ -48,6 +49,7 @@ namespace DefaultNamespace
             }
 
             _playerWaitingTime = _rigidBody.velocity.magnitude == 0 ? _playerWaitingTime + Time.deltaTime : 0;
+            _totalGameTime += Time.deltaTime;
             GlobalEventManager.UpdateWaitingTime(_playerWaitingTime);
         }
     }
