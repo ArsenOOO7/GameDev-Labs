@@ -14,9 +14,6 @@ namespace DefaultNamespace
 
         [Header("KeyBinds"), SerializeField] private KeyCode jumpKey = KeyCode.Space;
 
-        [Header("GroundCheck"), SerializeField]
-        private LayerMask isGround;
-
         private float _playerHeight;
         private float _horizontalInput;
         private float _verticalInput;
@@ -36,6 +33,9 @@ namespace DefaultNamespace
 
             _readyToJump = true;
             _playerHeight = transform.localScale.y;
+            
+            GlobalEventManager.OnPlayerFinished.AddListener(() => _gameStopped = true);
+            GlobalEventManager.OnPlayerDeath.AddListener(() => _gameStopped = true);
         }
 
         private void Update()
