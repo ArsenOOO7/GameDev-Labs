@@ -1,21 +1,23 @@
 ﻿using System.Collections;
+using Event;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace DefaultNamespace
 {
     public class RoadController : MonoBehaviour
     {
-        private float _length;
+        [SerializeField] private float length;
         private float _partLength;
         private Coroutine _coroutine;
 
-        [SerializeField] private float speed;
+        private float _speed = 10;
 
         private void Start()
         {
-            _length = transform.localScale.x;
-            _partLength = _length / 2;
+            _partLength = length / 2;
             ManageCoroutine(true);
+            RoadEventManager.OnPlayerSpeedChanges.AddListener(newSpeed => _speed = newSpeed);
         }
 
         private void ManageCoroutine(bool start)
@@ -39,7 +41,7 @@ namespace DefaultNamespace
             while (true)
             {
                 var currentPos = transform.position;
-                transform.position = new Vector3(currentPos.x + (Time.deltaTime * speed), currentPos.y, currentPos.z);
+                transform.position = new Vector3(currentPos.x, currentPos.y, currentPos.z - (Time.deltaTime * _speed));
                 yield return null;
             }
         }
@@ -47,19 +49,13 @@ namespace DefaultNamespace
         public void Move(Vector3 position)
         {
             var currentPos = transform.position;
-            transform.position = new Vector3(position.x - _partLength, currentPos.y, currentPos.z);
+            transform.position = new Vector3(currentPos.x, currentPos.y, position.z + _partLength);
         }
 
         public Vector3 GetEndPosition()
         {
             var currentPos = transform.position;
-            return new Vector3(currentPos.x - _partLength, currentPos.y, currentPos.z);
-        }
-
-        public Vector3 GetStartPosition()
-        {
-            var currentPos = transform.position;
-            return new Vector3(currentPos.x + _partLength, currentPos.y, currentPos.z);
+            return new Vector3(currentPos.x, currentPos.y, currentPos.z + _partLength);
         }
     }
 }

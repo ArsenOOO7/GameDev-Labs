@@ -48,7 +48,7 @@ namespace DefaultNamespace
         private void ComparePositions(RoadController fRoad, RoadController sRoad)
         {
             var roadPos = fRoad.GetEndPosition();
-            if (endTransform.position.x < roadPos.x)
+            if (endTransform.position.z > roadPos.z)
             {
                 fRoad.Move(sRoad.GetEndPosition());
             }
