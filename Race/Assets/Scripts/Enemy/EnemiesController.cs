@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using Event;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace DefaultNamespace.Enemy
@@ -18,6 +16,7 @@ namespace DefaultNamespace.Enemy
         [SerializeField] private List<EnemyController> pool;
         [SerializeField] private int maxEnemies = 5;
 
+        private bool _gameFinished = false;
 
         private readonly List<EnemyController> _onRoad = new();
 
@@ -33,6 +32,10 @@ namespace DefaultNamespace.Enemy
                 _onRoad.Remove(controller);
                 controller.RemoveFromRoad();
                 pool.Add(controller);
+            });
+            GlobalEventManager.OnGameStop.AddListener(() =>
+            {
+                _gameFinished = true;
             });
             ManageCoroutine(true);
         }
@@ -66,7 +69,7 @@ namespace DefaultNamespace.Enemy
 
         private IEnumerator SpawnEnemies()
         {
-            while (true)
+            while (!_gameFinished)
             {
                 if (_onRoad.Count <= maxEnemies && pool.Count != 0 && Random.Range(0, 4) > 1)
                 {
@@ -87,6 +90,9 @@ namespace DefaultNamespace.Enemy
 
                 yield return new WaitForSeconds(1);
             }
+
+            RemoveAllFromRoad();
+            ManageCoroutine(false);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Event;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -13,10 +14,17 @@ namespace DefaultNamespace
         private Transform endTransform;
 
         private Coroutine _coroutine;
+        
+        private bool _gameFinished = false;
+
 
         private void Start()
         {
             ManageCoroutine(true);
+            GlobalEventManager.OnGameStop.AddListener(() =>
+            {
+                _gameFinished = true;
+            });
         }
 
         private void ManageCoroutine(bool start)
@@ -37,12 +45,13 @@ namespace DefaultNamespace
 
         private IEnumerator MoveRoads()
         {
-            while (true)
+            while (!_gameFinished)
             {
                 ComparePositions(firstRoad, secondRoad);
                 ComparePositions(secondRoad, firstRoad);
                 yield return null;
             }
+            ManageCoroutine(false);
         }
 
         private void ComparePositions(RoadController fRoad, RoadController sRoad)

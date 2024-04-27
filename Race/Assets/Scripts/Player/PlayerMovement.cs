@@ -1,7 +1,5 @@
-﻿using System;
-using Event;
+﻿using Event;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace DefaultNamespace.Player
 {
@@ -16,15 +14,26 @@ namespace DefaultNamespace.Player
         private float _horizontalInput, _verticalInput;
         private Vector3 _moveDirection;
 
+        private bool _gameFinished = false;
+
         private void Start()
         {
             _rigidBody = GetComponent<Rigidbody>();
             _currentSpeed = moveSpeed;
             RoadEventManager.ChangePlayerSpeed(_currentSpeed);
+            GlobalEventManager.OnGameStop.AddListener(() =>
+            {
+                _gameFinished = true;
+            });
         }
 
         private void Update()
         {
+            if (_gameFinished)
+            {
+                return;
+            }
+            
             _horizontalInput = Input.GetAxisRaw("Horizontal");
             _verticalInput = Input.GetAxisRaw("Vertical");
             _currentSpeed += _verticalInput * Time.deltaTime * moveSpeed;
@@ -38,6 +47,11 @@ namespace DefaultNamespace.Player
 
         private void SpeedControl()
         {
+            if (_gameFinished)
+            {
+                return;
+            }
+            
             Vector3 oldVelocity = _rigidBody.velocity;
             Vector3 flatVelocity = new Vector3(oldVelocity.x, 0, oldVelocity.z);
 

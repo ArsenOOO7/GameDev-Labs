@@ -12,12 +12,19 @@ namespace DefaultNamespace
         private Coroutine _coroutine;
 
         private float _speed = 10;
+        
+        private bool _gameFinished = false;
+
 
         private void Start()
         {
             _partLength = length / 2;
             ManageCoroutine(true);
             RoadEventManager.OnPlayerSpeedChanges.AddListener(newSpeed => _speed = newSpeed);
+            GlobalEventManager.OnGameStop.AddListener(() =>
+            {
+                _gameFinished = true;
+            });
         }
 
         private void ManageCoroutine(bool start)
@@ -38,12 +45,13 @@ namespace DefaultNamespace
 
         private IEnumerator MoveRoad()
         {
-            while (true)
+            while (!_gameFinished)
             {
                 var currentPos = transform.position;
                 transform.position = new Vector3(currentPos.x, currentPos.y, currentPos.z - (Time.deltaTime * _speed));
                 yield return null;
             }
+            ManageCoroutine(false);
         }
 
         public void Move(Vector3 position)
