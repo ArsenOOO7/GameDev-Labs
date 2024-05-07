@@ -58,7 +58,6 @@ namespace Game.Player
                     hit = Physics2D.Raycast(transform.position, moveDirection, distance, interactable);
                     if (hit.collider != null && hit.collider.GetType().Equals(typeof(TilemapCollider2D)))
                     {
-                        //TODO: writesome shit here
                         //sheet, no shit - Pomircovana
                         var tileObstacle = hit.collider.GetComponentInParent<ObstacleController>();
                         tileObstacle.DestroyTile(cursorPosition);

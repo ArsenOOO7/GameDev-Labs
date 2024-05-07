@@ -16,13 +16,7 @@ namespace Game.Enemy
         [Header("Search")] [SerializeField] private float searchDistance;
 
         [SerializeField] private float chaseDistance;
-        [SerializeField] private float searchDelay;
-        [SerializeField] private float chaseDelay;
 
-        [Header("Interaction")] [SerializeField]
-        private float attackDistance = 1.5f;
-
-        [SerializeField] private float hitDistance = 2f;
         [SerializeField] private float damage = 25;
 
         [SerializeField] private Tilemap[] forbiddenTilemaps;
