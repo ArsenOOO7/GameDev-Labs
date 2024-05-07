@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Game.Collectable;
 using Game.Event;
+using Game.Level;
 using Game.Utils;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -12,12 +14,14 @@ namespace Game.Player
     public class PlayerMovement : MonoBehaviour
     {
         [SerializeField] private LayerMask interactable;
-        
+
         [SerializeField] private Tilemap[] forbiddenTilemaps;
         [SerializeField] private Tilemap walkable;
+        [SerializeField] private Tilemap finish;
 
         private Dictionary<Vector3Int, TileBase> vectorTileMap;
         private Dictionary<Vector3Int, TileBase> vectorObstaclesTileMap;
+        private Dictionary<Vector3Int, TileBase> finishTileMap;
 
         private bool _canMove;
 
@@ -36,8 +40,12 @@ namespace Game.Player
                 vectorObstaclesTileMap.AddRange(forbiddenTilemap.GetTileDictionaryWithType<TileBase>());
             }
 
+            finishTileMap = finish.GetTileDictionaryWithType<TileBase>();
+
             _startPosition = walkable.WorldToCell(transform.position);
             transform.position = _startPosition;
+            GlobalEventManager.OnGameStart.AddListener(() =>
+                transform.position = walkable.GetCellCenterWorld(_startPosition));
         }
 
         private void Start()
@@ -70,14 +78,21 @@ namespace Game.Player
                 if (hit.collider == null)
                 {
                     var movePosition = playerPosition + moveDirection;
-                    var movePositionInt = new Vector3Int(Mathf.RoundToInt(movePosition.x), Mathf.RoundToInt(movePosition.y), 0);
-                    if (vectorTileMap.TryGetValue(movePositionInt, out _) 
+                    var movePositionInt = new Vector3Int(Mathf.RoundToInt(movePosition.x),
+                        Mathf.RoundToInt(movePosition.y), 0);
+                    if (vectorTileMap.TryGetValue(movePositionInt, out _)
                         && !vectorObstaclesTileMap.TryGetValue(movePositionInt, out _))
                     {
                         transform.position = walkable.GetCellCenterWorld(movePositionInt);
                         _canMove = false;
                         StartMoveDelay();
                         GlobalEventManager.Tick();
+                    }
+
+                    if (finishTileMap.TryGetValue(movePositionInt, out _)
+                        && CollectableController.AllChestCollected())
+                    {
+                        LevelController.Instance.ChangeLevel();
                     }
                 }
             }

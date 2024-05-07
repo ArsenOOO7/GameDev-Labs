@@ -1,4 +1,5 @@
 ﻿using System;
+using Game.Event;
 using UnityEngine;
 
 namespace Game.Level
@@ -18,6 +19,7 @@ namespace Game.Level
         public void ChangeLevel()
         {
             HudController.Instance.UpdateLevel(++_currentLevel);
+            GlobalEventManager.Start();
         }
     }
 }

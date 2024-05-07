@@ -1,4 +1,5 @@
 ﻿using System;
+using Game.Collectable;
 using Game.Enemy;
 using Game.Obstacle;
 using Game.Utils;
@@ -9,6 +10,7 @@ namespace Game.Player
 {
     public class PlayerActionController : MonoBehaviour
     {
+        [SerializeField] private CollectableController[] collectables;
         [SerializeField] private Tilemap walkable;
         [SerializeField] private LayerMask enemy, interactable;
         [SerializeField] private float damage = 30f;
@@ -60,7 +62,17 @@ namespace Game.Player
                         //sheet, no shit - Pomircovana
                         var tileObstacle = hit.collider.GetComponentInParent<ObstacleController>();
                         tileObstacle.DestroyTile(cursorPosition);
+                        return;
                     }
+                    
+                    foreach (var collectableController in collectables)
+                    {
+                        if (collectableController.MyTile())
+                        {
+                            collectableController.OpenChest();
+                            return;
+                        }
+                    }                    
                 }
             }
         }

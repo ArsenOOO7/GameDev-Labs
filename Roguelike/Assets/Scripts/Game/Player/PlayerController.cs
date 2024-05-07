@@ -1,5 +1,6 @@
 ﻿using System;
 using Game.Event;
+using Game.Level;
 using UnityEngine;
 
 namespace Game.Player
@@ -22,5 +23,7 @@ namespace Game.Player
                 GlobalEventManager.Stop();
             }
         }
+        
+        
     }
 }
