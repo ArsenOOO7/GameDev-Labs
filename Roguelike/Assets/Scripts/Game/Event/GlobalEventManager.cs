@@ -1,4 +1,5 @@
-﻿using UnityEngine.Events;
+﻿using Game.Utils;
+using UnityEngine.Events;
 
 namespace Game.Event
 {
@@ -10,6 +11,10 @@ namespace Game.Event
 
         public static void Tick()
         {
+            if (GameStateManager.IsStopped)
+            {
+                return;
+            }
             OnTick.Invoke();
         }
 

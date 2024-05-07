@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Game.Collectable;
+using Game.Enemy;
 using Game.Event;
 using Game.Level;
 using Game.Utils;
@@ -71,6 +72,12 @@ namespace Game.Player
             {
                 var cursorPosition = walkable.GetCursorPosition();
                 var playerPosition = walkable.WorldToCell(transform.position);
+
+                if (cursorPosition.Equals(playerPosition))
+                {
+                    return;
+                }
+                
                 var moveDirection = Vector3.Normalize((cursorPosition - playerPosition));
 
                 var distance = Vector3Int.Distance(cursorPosition, playerPosition);
@@ -90,18 +97,13 @@ namespace Game.Player
                     }
 
                     if (finishTileMap.TryGetValue(movePositionInt, out _)
-                        && CollectableController.AllChestCollected())
+                        && CollectableController.AllChestCollected()
+                        && EnemyController.AllEnemiesDestroyed())
                     {
                         LevelController.Instance.ChangeLevel();
                     }
                 }
             }
-        }
-
-        private Vector3 GetCursorWorldPosition()
-        {
-            Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            return new Vector3(position.x, position.y, 0);
         }
 
         private void StartMoveDelay() => _moveDelayCoroutine ??= StartCoroutine(MoveDelay());

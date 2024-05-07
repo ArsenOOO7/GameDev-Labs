@@ -7,8 +7,22 @@ namespace Game.Player
 {
     public class PlayerController : MonoBehaviour
     {
+        [SerializeField] private GameObject losePanel;
         [SerializeField] private float startHealth;
         private float _health;
+
+        private void Awake()
+        {
+            GlobalEventManager.OnGameStart.AddListener(() =>
+            {
+                _health = startHealth;
+                losePanel.SetActive(false);
+            });
+            GlobalEventManager.OnGameStop.AddListener(() =>
+            {
+                losePanel.SetActive(true);
+            });
+        }
 
         private void Start()
         {
@@ -18,6 +32,7 @@ namespace Game.Player
         public void TakeDamage(float damage)
         {
             _health -= damage;
+            EntityEventManager.ChangeHp(_health);
             if (_health <= 0)
             {
                 GlobalEventManager.Stop();

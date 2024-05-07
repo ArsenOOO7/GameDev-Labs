@@ -31,11 +31,9 @@ namespace Game.Enemy
         private Dictionary<Vector3Int, TileBase> vectorTileMap;
         private Dictionary<Vector3Int, TileBase> vectorObstaclesTileMap;
 
-        private Coroutine _searchPlayer, _chasePlayer;
-
         private Vector3Int _startPosition;
         private GameObject _player;
-        private PlayerActionController _playerActionController;
+        private PlayerController _playerController;
 
         private bool _canMove;
         private Coroutine _moveDelayCoroutine;
@@ -47,9 +45,14 @@ namespace Game.Enemy
         private void Awake()
         {
             _startPosition = walkable.WorldToCell(transform.position);
-            transform.position = _startPosition;
-            GlobalEventManager.OnGameStart.AddListener(GameStart);
-            GlobalEventManager.OnGameStop.AddListener(GameStop);
+            transform.position = walkable.GetCellCenterWorld(_startPosition);
+            GlobalEventManager.OnGameStart.AddListener(() =>
+            {
+                transform.position = walkable.GetCellCenterWorld(_startPosition);
+                _canMove = true;
+            });
+            
+            GlobalEventManager.OnGameStop.AddListener(() => _canMove = false);
             GlobalEventManager.OnTick.AddListener(() =>
             {
                 if (_player == null)
@@ -71,18 +74,6 @@ namespace Game.Enemy
             }
         }
 
-        private void Start()
-        {
-        }
-
-        private void GameStart()
-        {
-        }
-
-        private void GameStop()
-        {
-        }
-
         private void ChasePlayer()
         {
             var distanceToPlayer = Vector3.Distance(transform.position, _player.transform.position);
@@ -100,9 +91,14 @@ namespace Game.Enemy
             if (target != null)
             {
                 _player = target.gameObject;
-                _playerActionController = _player.GetComponent<PlayerActionController>();
+                _playerController = _player.GetComponent<PlayerController>();
                 ChasePlayer();
             }
+        }
+
+        public void AllowMoving(bool allow)
+        {
+            _canMove = allow;
         }
 
         private void TryMoveToPlayer()
@@ -114,6 +110,10 @@ namespace Game.Enemy
             var distance = Vector3Int.Distance(playerPositon, position);
             if (distance <= 1)
             {
+                if (Random.Range(0, 100) < 60)
+                {
+                    _playerController.TakeDamage(damage);
+                }
                 return;
             }
             

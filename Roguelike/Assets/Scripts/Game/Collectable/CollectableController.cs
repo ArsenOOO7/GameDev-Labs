@@ -18,6 +18,8 @@ namespace Game.Collectable
         private static int OpenedChests = 0;
         private static int AllChests = 0;
 
+        private bool _opened = false;
+
         private void Awake()
         {
             _tilemap = GetComponentInChildren<Tilemap>();
@@ -37,16 +39,23 @@ namespace Game.Collectable
 
         public void OpenChest()
         {
+            if (_opened)
+            {
+                return;
+            }
+
             chest.SetActive(false);
             openChest.SetActive(true);
             ++OpenedChests;
+            _opened = true;
             EntityEventManager.OpenChest(OpenedChests);
         }
 
         public void ResetChest()
         {
-            chest.SetActive(false);
-            openChest.SetActive(true);
+            chest.SetActive(true);
+            openChest.SetActive(false);
+            _opened = false;
         }
 
         private static void ResetCounters()
