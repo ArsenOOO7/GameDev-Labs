@@ -1,0 +1,106 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Numerics;
+using Game.Event;
+using Game.Utils;
+using Unity.VisualScripting;
+using UnityEngine;
+using UnityEngine.Tilemaps;
+using Vector3 = UnityEngine.Vector3;
+
+namespace Game.Player
+{
+    public class PlayerMovement : MonoBehaviour
+    {
+        [SerializeField] private Tilemap[] forbiddenTilemaps;
+        [SerializeField] private Tilemap walkable;
+
+        private Dictionary<Vector3Int, TileBase> vectorTileMap;
+        private Dictionary<Vector3Int, TileBase> vectorObstaclesTileMap;
+
+        private bool _canMove;
+
+        private Coroutine _moveDelayCoroutine;
+        [SerializeField] private float _moveDelay;
+
+        private void Awake()
+        {
+            vectorTileMap = walkable.GetTileDictionaryWithType<TileBase>();
+            vectorObstaclesTileMap = new Dictionary<Vector3Int, TileBase>();
+
+            foreach (var forbiddenTilemap in forbiddenTilemaps)
+            {
+                vectorObstaclesTileMap.AddRange(forbiddenTilemap.GetTileDictionaryWithType<TileBase>());
+            }
+        }
+
+        private void Start()
+        {
+            _canMove = true;
+            transform.position = walkable.CellToWorld(new Vector3Int(1, 1));
+            GlobalEventManager.Start();
+        }
+
+        private void Update()
+        {
+            if (GameStateManager.IsStopped)
+            {
+                return;
+            }
+
+            TryMove();
+        }
+
+        private void TryMove()
+        {
+            if (Input.GetKey(KeyCode.Mouse0) && _canMove)
+            {
+                var cursorPosition = walkable.WorldToCell(GetCursorWorldPosition());
+                var playerPosition = walkable.WorldToCell(transform.position);
+                var moveDirection = Vector3.Normalize((cursorPosition - playerPosition));
+
+                var distance = Vector3Int.Distance(cursorPosition, playerPosition);
+                RaycastHit2D hit = Physics2D.Raycast(transform.position, moveDirection, distance);
+                if (hit.collider == null)
+                {
+                    var movePosition = playerPosition + moveDirection;
+                    var movePositionInt = new Vector3Int(Mathf.CeilToInt(movePosition.x), Mathf.CeilToInt(movePosition.y), 0);
+                    if (vectorTileMap.TryGetValue(movePositionInt, out _) 
+                        && !vectorObstaclesTileMap.TryGetValue(movePositionInt, out _))
+                    {
+                        transform.position = walkable.GetCellCenterWorld(movePositionInt);
+                        _canMove = false;
+                        StartMoveDelay();
+                        GlobalEventManager.Tick();
+                    }
+                }
+            }
+        }
+
+        private Vector3 GetCursorWorldPosition()
+        {
+            Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            return new Vector3(position.x, position.y, 0);
+        }
+
+        private void StartMoveDelay() => _moveDelayCoroutine ??= StartCoroutine(MoveDelay());
+        private void StopMoveDelay() => StopMyCoroutine(ref _moveDelayCoroutine);
+
+        private IEnumerator MoveDelay()
+        {
+            yield return new WaitForSeconds(_moveDelay);
+            _canMove = true;
+            StopMoveDelay();
+        }
+
+        private void StopMyCoroutine(ref Coroutine coroutine)
+        {
+            if (coroutine != null)
+            {
+                StopCoroutine(coroutine);
+                coroutine = null;
+            }
+        }
+    }
+}

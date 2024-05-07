@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Game.Utils;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.Tilemaps;
-using Utils;
 using Random = UnityEngine.Random;
 
-namespace Obstacle
+namespace Game.Obstacle
 {
     public class ObstacleController : MonoBehaviour
     {

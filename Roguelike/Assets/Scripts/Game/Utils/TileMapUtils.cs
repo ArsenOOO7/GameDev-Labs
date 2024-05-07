@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-namespace Utils
+namespace Game.Utils
 {
     public static class TileMapUtils
     {
@@ -57,6 +57,28 @@ namespace Utils
             }
 
             return positions.ToArray();
+        }
+
+        public static Dictionary<Vector3Int, T> GetTileDictionaryWithType<T>(this Tilemap tilemap)
+            where T : TileBase
+        {
+            Dictionary<Vector3Int, T> positions = new();
+
+            for (int y = tilemap.origin.y; y < tilemap.origin.y + tilemap.size.y; y++)
+            {
+                for (int x = tilemap.origin.x; x < tilemap.origin.x + tilemap.size.x; x++)
+                {
+                    var position = new Vector3Int(x, y, 0);
+                    T tile = tilemap.GetTile<T>(position);
+
+                    if (tile != null)
+                    {
+                        positions.Add(position, tile);
+                    }
+                }
+            }
+
+            return positions;
         }
     }
 }
