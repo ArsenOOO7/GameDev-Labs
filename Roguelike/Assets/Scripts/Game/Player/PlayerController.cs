@@ -16,6 +16,7 @@ namespace Game.Player
             GlobalEventManager.OnGameStart.AddListener(() =>
             {
                 _health = startHealth;
+                EntityEventManager.ChangeHp(_health);
                 losePanel.SetActive(false);
             });
             GlobalEventManager.OnGameStop.AddListener(() =>

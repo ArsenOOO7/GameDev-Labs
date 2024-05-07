@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Game.Event;
 using Game.Utils;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -20,11 +21,7 @@ namespace Game.Obstacle
         private void Awake()
         {
             _fieldPosition = patternTileMap.GetTilePositionWithType<TileBase>(patternTileBase.GetType());
-        }
-
-        private void Start()
-        {
-            RandomizeBarriers();
+            GlobalEventManager.OnGameStart.AddListener(RandomizeBarriers);
         }
 
         private void RandomizeBarriers()
