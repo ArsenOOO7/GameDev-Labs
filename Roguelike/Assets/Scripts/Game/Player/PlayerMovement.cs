@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Numerics;
 using Game.Event;
 using Game.Utils;
 using Unity.VisualScripting;
@@ -13,6 +11,8 @@ namespace Game.Player
 {
     public class PlayerMovement : MonoBehaviour
     {
+        [SerializeField] private LayerMask interactable;
+        
         [SerializeField] private Tilemap[] forbiddenTilemaps;
         [SerializeField] private Tilemap walkable;
 
@@ -24,6 +24,8 @@ namespace Game.Player
         private Coroutine _moveDelayCoroutine;
         [SerializeField] private float _moveDelay;
 
+        private Vector3Int _startPosition;
+
         private void Awake()
         {
             vectorTileMap = walkable.GetTileDictionaryWithType<TileBase>();
@@ -33,6 +35,9 @@ namespace Game.Player
             {
                 vectorObstaclesTileMap.AddRange(forbiddenTilemap.GetTileDictionaryWithType<TileBase>());
             }
+
+            _startPosition = walkable.WorldToCell(transform.position);
+            transform.position = _startPosition;
         }
 
         private void Start()
@@ -61,11 +66,11 @@ namespace Game.Player
                 var moveDirection = Vector3.Normalize((cursorPosition - playerPosition));
 
                 var distance = Vector3Int.Distance(cursorPosition, playerPosition);
-                RaycastHit2D hit = Physics2D.Raycast(transform.position, moveDirection, distance);
+                RaycastHit2D hit = Physics2D.Raycast(transform.position, moveDirection, distance, interactable);
                 if (hit.collider == null)
                 {
                     var movePosition = playerPosition + moveDirection;
-                    var movePositionInt = new Vector3Int(Mathf.CeilToInt(movePosition.x), Mathf.CeilToInt(movePosition.y), 0);
+                    var movePositionInt = new Vector3Int(Mathf.RoundToInt(movePosition.x), Mathf.RoundToInt(movePosition.y), 0);
                     if (vectorTileMap.TryGetValue(movePositionInt, out _) 
                         && !vectorObstaclesTileMap.TryGetValue(movePositionInt, out _))
                     {
