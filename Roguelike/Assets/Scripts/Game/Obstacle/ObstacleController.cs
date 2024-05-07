@@ -49,10 +49,9 @@ namespace Game.Obstacle
             }
         }
 
-        public void DestroyTile(Vector3 position)
+        public void DestroyTile(Vector3Int position)
         {
-            Vector3Int gridPosition = barrierTileMap.WorldToCell(position);
-            barrierTileMap.SetTile(gridPosition, null);
+            barrierTileMap.SetTile(position, null);
         }
     }
 }

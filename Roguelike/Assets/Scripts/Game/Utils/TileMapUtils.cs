@@ -80,5 +80,11 @@ namespace Game.Utils
 
             return positions;
         }
+
+        public static Vector3Int GetCursorPosition(this Tilemap tilemap)
+        {
+            Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            return tilemap.WorldToCell(new Vector3(position.x, position.y, 0));
+        }
     }
 }

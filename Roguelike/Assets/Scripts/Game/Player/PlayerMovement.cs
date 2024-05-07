@@ -59,9 +59,9 @@ namespace Game.Player
 
         private void TryMove()
         {
-            if (Input.GetKey(KeyCode.Mouse0) && _canMove)
+            if (Input.GetKey(KeyCode.Mouse1) && _canMove)
             {
-                var cursorPosition = walkable.WorldToCell(GetCursorWorldPosition());
+                var cursorPosition = walkable.GetCursorPosition();
                 var playerPosition = walkable.WorldToCell(transform.position);
                 var moveDirection = Vector3.Normalize((cursorPosition - playerPosition));
 

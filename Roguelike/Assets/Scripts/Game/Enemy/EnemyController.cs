@@ -1,10 +1,9 @@
 ﻿using System;
-using Game.Event;
 using UnityEngine;
 
-namespace Game.Player
+namespace Game.Enemy
 {
-    public class PlayerController : MonoBehaviour
+    public class EnemyController : MonoBehaviour
     {
         [SerializeField] private float startHealth;
         private float _health;
@@ -19,7 +18,7 @@ namespace Game.Player
             _health -= damage;
             if (_health <= 0)
             {
-                GlobalEventManager.Stop();
+                Destroy(gameObject);
             }
         }
     }

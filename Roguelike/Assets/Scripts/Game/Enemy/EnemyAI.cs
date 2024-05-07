@@ -112,7 +112,7 @@ namespace Game.Enemy
             var moveDirection = Vector3.Normalize((playerPositon - position));
 
             var distance = Vector3Int.Distance(playerPositon, position);
-            if (distance == 0)
+            if (distance <= 1)
             {
                 return;
             }
@@ -124,7 +124,8 @@ namespace Game.Enemy
                 var movePositionInt =
                     new Vector3Int(Mathf.RoundToInt(movePosition.x), Mathf.RoundToInt(movePosition.y), 0);
                 if (vectorTileMap.TryGetValue(movePositionInt, out _)
-                    && !vectorObstaclesTileMap.TryGetValue(movePositionInt, out _))
+                    && !vectorObstaclesTileMap.TryGetValue(movePositionInt, out _)
+                    && movePositionInt != playerPositon)
                 {
                     transform.position = walkable.GetCellCenterWorld(movePositionInt);
                     _canMove = false;
