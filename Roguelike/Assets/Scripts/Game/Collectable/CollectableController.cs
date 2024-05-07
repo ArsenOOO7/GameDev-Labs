@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Game.Event;
 using Game.Utils;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -21,6 +23,11 @@ namespace Game.Collectable
             _tilemap = GetComponentInChildren<Tilemap>();
             tiles = _tilemap.GetTileDictionaryWithType<TileBase>();
             ++AllChests;
+            GlobalEventManager.OnGameStart.AddListener(() =>
+            {
+                ResetChest();
+                ResetCounters();
+            });
         }
 
         public bool MyTile()
@@ -33,6 +40,19 @@ namespace Game.Collectable
             chest.SetActive(false);
             openChest.SetActive(true);
             ++OpenedChests;
+            EntityEventManager.OpenChest(OpenedChests);
+        }
+
+        public void ResetChest()
+        {
+            chest.SetActive(false);
+            openChest.SetActive(true);
+        }
+
+        private static void ResetCounters()
+        {
+            OpenedChests = 0;
+            EntityEventManager.OpenChest(0);
         }
 
         public static bool AllChestCollected()
